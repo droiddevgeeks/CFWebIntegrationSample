@@ -2,14 +2,12 @@ package com.cashfree.webintegration
 
 import android.content.Intent
 import android.graphics.Bitmap
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.util.Xml
 import android.view.Menu
 import android.view.MenuItem
 import android.webkit.ConsoleMessage
-import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
@@ -92,9 +90,6 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun createCFPayForm() {
-        val inputTag = "<input type=\"hidden\" name=\"%s\" value=\"%s\"/>"
-        val platform = "chxx-c-x-x-x-w-x-a-" + Build.VERSION.SDK_INT
-        val url = "https://sandbox.cashfree.com/pg/view/sessions/checkout"
         val iStream = resources.openRawResource(com.cashfree.pg.core.R.raw.cashfree_pay_form)
         val formTemplate = StringBuilder()
 
@@ -110,19 +105,9 @@ class MainActivity : AppCompatActivity() {
             Log.d("HTML Exception", "${ignored.message}")
         }
 
-        val formBody = java.lang.StringBuilder()
-        formBody.append(String.format(inputTag, "hideHeader", true))
-        formBody.append(String.format(inputTag, "platform", platform))
-        formBody.append(
-            String.format(
-                inputTag,
-                "payment_session_id",
-                "session_-GhmpV9RRyPL5BY2wq5QRfPqJJ1BMx5QEUfmHI91ZSjls5M-OG2x8lPa8p3XC8TDakf3Y2ejPt0WyikVbXBJkNLlcP8n3Uuoe8Cs252vmbRS"
-            )
-        )
-
-
-        val body = String.format(formTemplate.toString(), url, formBody.toString())
+        val environment  = "sandbox"
+        val paymentSessionId  = "session_lTKCsYMk5ojQKRMrz1zZtnJweZ1o4rqMoUnUB70bcdWqJoh0KUcelSe2aIfZR5IjKDGYbvDgHa4JObiRJuJi8n651FEdV8eidpmKmpMLWukd"
+        val body = String.format(formTemplate.toString(), environment, paymentSessionId)
         openCheckoutPage(body)
     }
 
@@ -139,9 +124,9 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 1000) {
-            binding.webViewContainer.evaluateJavascript("window.showVerifyUI()", ValueCallback<String?> {
+            binding.webViewContainer.evaluateJavascript("window.showVerifyUI()") {
                 //ignore
-            })
+            }
         }
     }
 }
